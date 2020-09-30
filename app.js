@@ -13,6 +13,7 @@ let isGoingLeft = false;
 let isGoingRight = false;
 let leftTimerId;
 let rightTimerid;
+let score = 0;
 
 function createDoodler() {
 	grid.appendChild(doodler);
@@ -42,7 +43,6 @@ function createPlatforms() {
 		let newPlatBottom = 100 + i * platGap;
 		let newPlatform = new Platform(newPlatBottom);
 		platforms.push(newPlatform);
-		console.log(platforms);
 	}
 }
 // moving platforms down
@@ -52,6 +52,15 @@ function movePlatforms() {
 			platform.bottom -= 4;
 			let visual = platform.visual;
 			visual.style.bottom = `${platform.bottom}px`;
+
+			if (platform.bottom < 10) {
+				let firstPlatform = platforms[0].visual;
+				firstPlatform.classList.remove("platform");
+				platforms.shift();
+				score++;
+				let newPlatform = new Platform(600);
+				platforms.push(newPlatform);
+			}
 		});
 	}
 }
@@ -96,8 +105,14 @@ function fall() {
 function gameOver() {
 	console.log("GAME OVER!");
 	isGameOver = true;
+	while (grid.firstChild) {
+		grid.removeChild(grid.firstChild);
+	}
+	grid.innerHTML = score;
 	clearInterval(upTimerId);
 	clearInterval(downTimerId);
+	clearInterval(leftTimerId);
+	clearInterval(rightTimerId);
 }
 
 function control(e) {
@@ -112,7 +127,7 @@ function control(e) {
 
 function moveLeft() {
 	if (isGoingRight) {
-		clearInterval(rightTimerid);
+		clearInterval(rightTimerId);
 		isGoingRight = false;
 	}
 	isGoingLeft = true;
@@ -126,7 +141,7 @@ function moveLeft() {
 
 function moveRight() {
 	if (isGoingLeft) {
-		clearInterval(leftTimerid);
+		clearInterval(leftTimerId);
 		isGoingLeft = false;
 	}
 	isGoingRight = true;
@@ -141,7 +156,7 @@ function moveRight() {
 function moveStraight() {
 	isGoingRight = false;
 	isGoingLeft = false;
-	clearInterval(rightTimerid);
+	clearInterval(rightTimerId);
 	clearInterval(leftTimerId);
 }
 
